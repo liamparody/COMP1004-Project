@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <title>Bayside School Database</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary"> <!--HTML for top navigation bar-->
+            <div class="container-fluid">
+                <a class="navbar-brand">Bayside School Database</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav"> <!--HTML for navigation buttons on Navbar, each button calls the showContent() function with their individual identifiers-->
+                        <a onclick="showContent('home')" class="nav-link" href="#" aria-current="page" data-page="home">Home</a>
+                        <a onclick="showContent('database')" class="nav-link" href="#" data-page="test">Database</a>
+                        <a onclick="showContent('calculator')" class="nav-link" href="#" data-page="calculator">Grade Calculator</a>
+                        <a onclick="showContent('help')" class="nav-link" href="#" data-page="help">Help</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    <div id="home" class="content container-fluid"><!--HTML for home page-->
+        <h1 class="fs-1 fw-bold  py-4">Welcome to Bayside</h1>
+        <p class="fs-5 fw-normal">Use this website to view and manage the Bayside School database</p>
+        <h2 class="fs-5 fw-normal py-2">Click the help button below for more info</h2>
+        <button class="btn btn-primary btn-lg py-3" onclick="showContent('help')">Help</button><!--button calls the help page to show-->
+        <div class="py-5">
+            <p class="fs-5 fw-normal">Upload your database JSON file below</p>
+            <input type="file" id="JSONFile" name="JSONFile" accept=".JSON"> <!--input box for uploading JSON file-->
+            <div>
+            <button onclick="loadJSON()" class="btn btn-primary btn-lg py-3">Load JSON file</button> <!--load button for JSON File-->
+            <div class="fs-5 fw-normal py-3" id="JSONLoadedText"></div> <!--empty div which will be written by JS to confirm file is loaded-->
+            <div class="fs-5 fw-normal py-3">Make Sure to Export Your JSON File Before Leaving the Site</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="database" class="content" style="display: none;"> <!--HTML for database page-->
+        <div class="container-fluid">
+            <h1 class="fs-1 fw-bold">Bayside School Database</h1>
+            <!--below when clicked loads the editor page-->
+            <button onclick="showContent('editor')"class="btn btn-primary btn-lg py-3" href="#" data-page="editor">Edit</button>
+            <!--below when clicked calls the saveJSON() function which downloads the database data into a local JSON file-->
+            <button onclick="saveJSON()" class="btn btn-primary btn-lg py-3" href="#" data-page="Download">Download JSON File</button>
+            <!--below when clicked fills the database page table with only record belonging to Teachers-->
+            <button onclick="fillTable(JSONData, 'Teacher')" class="btn btn-primary btn-lg py-3" href="#" data-page="teacher">Teachers</button>
+            <!--below when clicked fills the database page table with only records belonging to Students-->
+            <button onclick="fillTable(JSONData, 'Student')" class="btn btn-primary btn-lg py-3" href="#" data-page="student">Students</button>
+            <!--below when clicked fills the database page table with all existing records-->
+            <button onclick="fillTable(JSONData)" class="btn btn-primary btn-lg py-3" href="#" data-page="all">All Records</button>
+            <table id="mainTable" class="table table-striped mt-4">
+                <thead class="table-dark"> <!--creates the table and fills the headings of said table-->
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Role</th>
+                        <th>Classes (select one to see assigned grades)</th>
+                        <th>Grade (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    
+    </div>
+    <div id="editor" class="content" style="display: none;"> <!--HTML for the editor page-->
+        <div class="container-fluid">
+            <h1 class="fs-1 fw-bold">Bayside School Database</h1>
+            <!--below when clicked calls the saveEdits() function which saves all edits done on the editor page and returns to the database page-->
+            <button onclick="saveEdits()"class="btn btn-primary btn-lg py-3" href="#" data-page="Save">Save</button>
+            <!--below when clicked calls the addRow() function which adds a new empty row to the table to be filled in by user-->
+            <button onclick="addRow()"class="btn btn-primary btn-lg py-3" href="#" data-page="Add">Add New Record</button>
+            <table id="editTable" class="table table-striped mt-4"><!--creates table for editor page and fills its headings-->
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Role</th>
+                        <th>Classes</th>
+                        <th>Grade (%)</th>
+                        <th>Delete Record</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                       
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+    <div id="calculator" class="content" style="display: none;"> <!--HTML for the calculator page-->
+        
+        <div class="container-fluid">
+            <h1 class="fs-1 fw-bold">Grade Calculator</h1>
+            <p class="fs-5 fw-normal">Use this page to work out student grade percentages</p>
+            <br>
+            <!--the two lines below create the data entry field and label for the student marks box of the calculator-->
+            <label for="studentMarks" class="form-label">Student Marks</label>
+            <input type="number" class="form-control py-1" placeholder="Enter Student Marks" id="studentMarks">
+            <!--the two lines below create the data entry field and label for the total possible marks box of calculator-->
+            <label for="totalMarks" class="form-label">Total Possible Marks</label>
+            <input type="number" class="form-control py-1" placeholder="Enter Total Possible Marks" id="totalMarks">
+            <!--the two lines below create the data entry field and label for the minumum pass percentage box of the calculator-->
+            <label for="passPercentage" class="form-label">Minimum Pass Percentage (Optional)</label>
+            <input type="number" class="form-control py-1" placeholder="Enter Minimum Passing Percentage" id="passPercentage">
+            <label for="studentSelect" class="form-label">Select a Student and Class to Apply the Grade Percentage to Their Record and Then Press Calculate</label>
+            <!--creates a dropdown menu which will be populated with student names, when a choice is made it will call the fillClassDropdown()
+            function which will then fill the classSelect dropdown below-->
+            <form>
+                <select id="studentSelect" onchange="fillClassDropdown()"></select>
+            </form>
+            <form>
+                <select id="classSelect"></select>
+            </form>
+            <!--below is the calculate button, when pressed the calculateGrades() function will be called doing the maths and outputting
+            the result in the result box below-->
+            <button onclick="calculateGrades()"class="btn btn-primary btn-lg py-1" href="#" data-page="Calculate">Calculate</button>
+            <br>
+            <br>
+            <label for="result" class="form-label">Grade</label>
+            <div class="form-control" id="result">Result Will Appear Here</div> <!--results box-->
+            <label for="passFail" class="form-label">Pass or Fail</label> 
+            <!--below is thepass/fail box which will output either pass or fail depending on what is calculated during the calculateGrades()
+            function and if the minimum pass percentage box is filled-->
+            <div class="form-control" id="passFail">Whether The Student Passed or Failed Will Appear Here</div>
+        </div>
+    </div>
+
+    <div id="help" class="content" style="display: none;"> <!--HTML for the help page-->
+        <div class="container-fluid">
+        <h1 class="fs-1 fw-bold">Help Page</h1>
+        <p class="fs-5 fw-normal">Use This Page to Get Answers to the Most Frequently Asked Questions About Using This Site</p>
+        <div class="accordion"> <!--creates an accordion to hide/show the faq answers-->
+        <div class="accordion-item">
+            <!--below is a question section of the accordion-->
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="False" aria-controls="collapseOne">
+                    How do I upload my JSON file to the database website? 
+                </button>
+            </h2>
+            <!--below is an answer section of the accordion-->
+            <div id="collapseOne" class="accordion-collapse collapse collapse" aria-labelledby="headingOne">
+                <div class="accordion-body">
+                    Go to the home page and click on the "Choose file" then select the JSON file stored on your device and click upload
+                    then click the "load JSON file" button, if it is successfully uploaded text will appear saying "JSON File Successfully Loaded"
+                </div>
+            </div>
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="False" aria-controls="collapseTwo">
+                    Do i need to upload and re-download my JSON File every time I use the website?
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse collapse" aria-labelledby="headingTwo">
+                <div class="accordion-body">
+                    No, you do not, the data is stored in your browser with local storage until you clear your browsing history, however we recommend uploading
+                    and re-downloading your JSON file when possible to prevent any accidental data loss
+                </div>
+            </div>
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="False" aria-controls="collapseThree">
+                    How do I edit my records
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse collapse" aria-labelledby="headingThree">
+                <div class="accordion-body">
+                    Go to the "Database" page and click the edit button, once there you can edit all of the records, along with creating new
+                    ones and deleting existing ones
+                </div>
+            </div>
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="False" aria-controls="collapseFour">
+                    Why are there no grades visible in both the database and edit page?
+                </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse collapse" aria-labelledby="headingFour">
+                <div class="accordion-body">
+                    To view the grades in either page, select the class of the grade you want to see and if that class has a grade stored it will
+                    appear under the grade column, you can then use that box in the edit page to edit the grade of the class for the student,
+                    make sure to click the save button whenever you add a new grade to a students record. If the record is for a teacher you 
+                    can view what classes they teach but they will obviously not have any grades stored.
+                </div>
+            </div>
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="False" aria-controls="collapseFive">
+                    How can i add grades to a record using the grade calculator?
+                </button>
+            </h2>
+            <div id="collapseFive" class="accordion-collapse collapse collapse" aria-labelledby="headingFive">
+                <div class="accordion-body">
+                    First go to the "grade calculator" page, once there select the student and class you wish to apply this grade to, once selected
+                    use the grade calculator as normal and the result will automatically be applied to that student for the selected class. You can 
+                    also use the calculator to see if a student has passed or failed their class, enter the minimum pass percentage in the "Minimum Pass Percentage" 
+                    box and the calculator will tell you if the student has passed or failed their class.
+                </div>
+            </div>
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="False" aria-controls="collapseSix">
+                    How do I add and remove classes from a record?
+                </button>
+            </h2>
+            <div id="collapseSix" class="accordion-collapse collapse collapse" aria-labelledby="headingSix">
+                <div class="accordion-body">
+                    First go to the "Database" page, once there click "Edit", you should see two dropdown boxes which say "Current" and 
+                    "All", current are the classes that person is currently in and all is all of the classes taught in the school, to add 
+                    a new class, select an option from the all dropdown box and then click add, this class will then be added to the persons 
+                    record. To delete a class select one of the classes from the current dropdown boxes and then select delete, this class 
+                    will then be removed from that persons record.
+                </div>
+            </div>
+            
+        </div>
+        </div>
+    </div>
+</div>
+        <!--below is the script source for the bootstrap elements used in this site, this was obtained from https://getbootstrap.com/-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> 
+        <script src="app.js"></script> <!--links the javascript to this html page-->
+        <link rel="stylesheet" href="style.css"> <!--links the css to this html page-->
+
+ 
+    </body>
+</html>

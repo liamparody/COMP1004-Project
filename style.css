@@ -1,0 +1,25 @@
+body{
+    font-family: Arial, sans-serif;
+}
+.content {
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+button{
+    width: 19%;
+    opacity: 1;
+    visibility: visible;
+}
+input {
+    margin-top: 10px; 
+    margin-bottom: 25px;
+}
+#editTable button {
+    width: auto;
+    min-width: 60px; 
+}
+.button-container {
+    display: flex;
+    flex-direction: column;
+}
